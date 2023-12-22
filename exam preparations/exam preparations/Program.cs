@@ -1,45 +1,75 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace _02._Shoot_for_the_Win
+namespace _03._Moving_Target
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            int[] targets = Console.ReadLine().Split().Select(int.Parse).ToArray();
-            string command = "";
-            int counter = 0;
+            List<int> targets = Console.ReadLine()
+                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse)
+                .ToList();
 
-            while ((command = Console.ReadLine()) != "End")
+            while (true)
             {
-                int indexTarget = int.Parse(command);
+                string input = Console.ReadLine();
 
-                if (indexTarget >= 0 && indexTarget < targets.Length)
+                if (input == "End")
                 {
-                    for (int i = 0; i < targets.Length; i++)
-                    {
-                        int temp = targets[indexTarget];
+                    break;
+                }
 
-                        if (targets[i] != -1 && i != indexTarget)
+                string[] commandInput = input.Split().ToArray();
+
+                string command = commandInput[0];
+                int index = int.Parse(commandInput[1]);
+
+                if (command == "Shoot")
+                {
+                    int power = int.Parse(commandInput[2]);
+
+                    if (index >= 0 && index < targets.Count)
+                    {
+                        targets[index] -= power;
+
+                        if (targets[index] <= 0)
                         {
-                            if (targets[i] > temp)
-                            {
-                                targets[i] -= temp;
-                            }
-                            else if (targets[i] <= temp)
-                            {
-                                targets[i] += temp;
-                            }
+                            targets.RemoveAt(index);
                         }
                     }
+                }
+                else if (command == "Add")
+                {
+                    int value = int.Parse(commandInput[2]);
 
-                    targets[indexTarget] = -1;
-                    counter++;
+                    if (index >= 0 && index < targets.Count)
+                    {
+                        targets.Insert(index, value);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid placement!");
+                    }
+                }
+                else if (command == "Strike")
+                {
+                    int radius = int.Parse(commandInput[2]);
+
+                    if (index - radius >= 0 && index + radius < targets.Count)
+                    {
+                        targets.RemoveRange(index - radius, radius * 2 + 1);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Strike missed!");
+                    }
                 }
             }
 
-            Console.WriteLine($"Shot targets: {counter} ->" + " " + string.Join(' ', targets));
+            Console.WriteLine(string.Join("|", targets));
         }
     }
 }
