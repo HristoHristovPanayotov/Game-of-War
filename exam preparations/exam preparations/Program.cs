@@ -1,47 +1,45 @@
 ﻿using System;
+using System.Linq;
 
-namespace Exam_Preparatiions
-
+namespace _02._Shoot_for_the_Win
 {
     class Program
     {
         static void Main(string[] args)
         {
-            double energy = double.Parse(Console.ReadLine());
-            int wins = 0;
+            int[] targets = Console.ReadLine().Split().Select(int.Parse).ToArray();
+            string command = "";
+            int counter = 0;
 
-            string command = Console.ReadLine();
-
-            while (command != "End of battle")
+            while ((command = Console.ReadLine()) != "End")
             {
-                double distance = double.Parse(command);
+                int indexTarget = int.Parse(command);
 
-                if (energy < distance)
+                if (indexTarget >= 0 && indexTarget < targets.Length)
                 {
-                    Console.WriteLine($"Not enough energy! Game ends with {wins} won battles and {energy} energy");
-                    energy -= distance; // Subtract energy before breaking the loop
-                    break;
+                    for (int i = 0; i < targets.Length; i++)
+                    {
+                        int temp = targets[indexTarget];
+
+                        if (targets[i] != -1 && i != indexTarget)
+                        {
+                            if (targets[i] > temp)
+                            {
+                                targets[i] -= temp;
+                            }
+                            else if (targets[i] <= temp)
+                            {
+                                targets[i] += temp;
+                            }
+                        }
+                    }
+
+                    targets[indexTarget] = -1;
+                    counter++;
                 }
-
-                energy -= distance;
-                wins++;
-
-                if (wins % 3 == 0)
-                {
-                    energy += wins;
-                }
-
-                command = Console.ReadLine();
             }
 
-            if (energy >= 0)
-            {
-                Console.WriteLine($"Won battles: {wins}. Energy left: {energy}");
-            }
-            else
-            {
-                Console.WriteLine($"Aleksandar, please be careful");
-            }
+            Console.WriteLine($"Shot targets: {counter} ->" + " " + string.Join(' ', targets));
         }
     }
 }
